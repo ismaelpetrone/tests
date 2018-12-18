@@ -13,7 +13,7 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
     public data: Brastlewark[];
 
     ngOnInit(): void {
-        
+        // First commit
     }
   
     ngAfterViewInit(): void {
