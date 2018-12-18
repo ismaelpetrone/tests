@@ -1,0 +1,63 @@
+<div>
+
+    <div style="text-align:center">
+      <img class="knuckles" width="300" alt="Angular Logo" src="https://vignette.wikia.nocookie.net/dxdfanon/images/4/45/Ugandan_knuckles.gif/revision/latest?cb=20180116233715">
+    </div>
+
+    <div class="table-responsive">
+
+      <table class="table table-hover table-striped text-centered">
+
+        <thead class="thead-dark">
+          <th>
+            Application code
+          </th>
+          <th>
+            Owner
+          </th>
+          <th>
+            Name
+          </th>
+          <th>
+            Progress
+          </th>
+          <th>
+            Options
+          </th>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let app of applications">
+            <td>
+                {{app.code}}
+            </td>
+            <td>
+                {{app.owner}}
+            </td>
+            <td>
+                {{app.name}}
+            </td>
+            <td>
+                <i 
+                  class="fa fa-circle in-progress"
+                  aria-hidden="true"                  
+                ></i>
+            </td>
+            <td>
+              <nav>
+                <h4>            
+                  <a  routerLink="{{app.route}}"
+                      routerLinkActive="active-link">
+                      <i class="fa fa-play" aria-hidden="true"></i>
+                  </a>
+                </h4>
+              </nav>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>

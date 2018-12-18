@@ -1,0 +1,23 @@
+.knuckles {
+  position: relative;
+  animation: walk 8s infinite;
+}
+
+table{
+  margin: 0 auto;
+  table-layout: fixed;
+}
+
+.in-progress{
+  color: orange;
+}
+
+@keyframes walk {
+  0% { transform: translate(45em, 0); }
+  100% { transform: translate(-45em, 0); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

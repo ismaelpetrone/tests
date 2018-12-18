@@ -1,0 +1,30 @@
+<div #fontassessment>
+    <go-to
+        #back
+        [path]="main">
+    </go-to>
+    <table class="table table-hover table-striped" style="table-layout: fixed;">
+        <thead class="thead-dark">
+            <th>Name</th>
+            <th>Age</th>
+            <th>Height</th>
+            <th>Hair color</th>
+        </thead>
+        <tbody>
+            <tr *ngFor="let person of data">
+                <td>
+                    {{person.name}}
+                </td>
+                <td>
+                    {{person.age}}
+                </td>
+                <td>
+                    {{person.height}}
+                </td>
+                <td>  
+                    {{person.hair_color}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
