@@ -3,15 +3,54 @@
         #back
         [path]="main">
     </go-to>
-    <table class="table table-hover table-striped" style="table-layout: fixed;">
+    <div class="float-left">
+        Result: {{displayData.length}}
+    </div>  
+    <div class="float-right">
+        <i style="font-size:38px;" class="fa fa-filter" aria-hidden="true" (click)="showFilters=!showFilters"></i>        
+    </div>
+    <div class="float-right">
+        <input *ngIf="showFilters"
+        class="form-control"
+        type="text"
+        name="filterText"
+        placeholder="Search text"
+        [(ngModel)]="filterText"
+        [value]="filterText"
+        (keyup)="do_filter_keyup()"
+        />
+    </div>               
+    <div *ngIf="showFilters" class="float-right form-check-inline">           
+        <div *ngFor="let filter of filters">
+            <button 
+                type="button"
+                class="btn"
+                [ngClass]="{
+                    'btn-success': filter.selected,
+                    'btn-secondary': !filter.selected
+                }"
+                (click)="filter.selected=!filter.selected;do_filter()">
+            {{filter.name}}
+            </button>
+        </div>
+    </div>
+    <br>
+    <table class="table table-hover table-striped" style="">
         <thead class="thead-dark">
+            <th></th>
             <th>Name</th>
             <th>Age</th>
             <th>Height</th>
+            <th>Weight</th>
             <th>Hair color</th>
+            <th>Professions</th>
+            <th>Friends</th>
         </thead>
         <tbody>
-            <tr *ngFor="let person of data">
+            <tr *ngFor="let person of displayData">
+                <td>
+                    <img width="100px" height="80px" src="{{person.thumbnail}}"/>
+                </td>
                 <td>
                     {{person.name}}
                 </td>
@@ -21,10 +60,21 @@
                 <td>
                     {{person.height}}
                 </td>
+                <td>
+                    {{person.weight}}
+                </td>
                 <td>  
                     {{person.hair_color}}
                 </td>
+                <td style="overflow:auto;">
+                    {{person.professions}}
+                </td>
+                <td style="overflow:auto;">  
+                    {{person.friends}}
+                </td>
             </tr>
         </tbody>
+        <tfoot>            
+        </tfoot>
     </table>
 </div>
