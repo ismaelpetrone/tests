@@ -75,9 +75,6 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
     private _insertToDisplayData(): void {
         if (this.data.length === this.displayData.length) return;
         this.displayData = this.data;
-        /*this.data.forEach((profile: Brastlewark) => {
-            this.displayData.push(profile);
-        });*/
     }
 
     private _searchParams(profile: Brastlewark): Brastlewark {        
@@ -90,22 +87,22 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
                         compare = profile.name;
                     break;
                     case 2:
-                        compare = profile.age;
+                        compare = profile.age.toString();
                     break;
                     case 3:
-                        compare = profile.height;
+                        compare = profile.height.toString();
                     break;
                     case 3:
-                        compare = profile.weight;
+                        compare = profile.weight.toString();
                     break;
                     case 5:
                         compare = profile.hair_color;
                     break;
                     case 6:
-                        compare = profile.professions;
+                        compare = profile.professions.toString();
                     break;
                     case 7:
-                        compare = profile.friends;
+                        compare = profile.friends.toString();
                     break;
                 }
                 if (compare && this._findValues(compare,  this.filterText)) {
@@ -117,15 +114,19 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
     }
 
     private _findValues(content: any, textToFind: any): boolean {
-        if (content instanceof Array) {
-            for (let i = 0; i < content.length; i++) {
-                const valueField = content[i];
-                if (valueField.toLowerCase().includes(textToFind.toLowerCase())) {
-                    return true;
-                }
+        const splitted_search = textToFind.replace(' ', '').split(',');
+        const splitted_content = content.split(',');
+        for (let i = 0; i < splitted_content.length; i++) {
+            if (this._findValues2(splitted_content[i].toString(), splitted_search)) {
+                return true;
             }
-        } else {
-            if (content.toString().toLowerCase().includes(textToFind.toLowerCase())) {
+        }
+        return false;
+    }
+
+    private _findValues2(valueField: String, splitted_search: String[]): boolean {
+        for (let i = 0; i < splitted_search.length; i++) {
+            if (valueField.toLowerCase().includes(splitted_search[i].toString().toLowerCase())) {
                 return true;
             }
         }
@@ -141,5 +142,16 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
         }
         return false;
     }
+
+    private _getNumberOfFilters(): number {
+        let c = 0;
+        for (let i = 0; i < this.filters.length; i++) {
+            const filter = this.filters[i] as Filter;
+            if (filter.selected) {
+                c++
+            }
+        }
+        return c;
+}
 
 }
