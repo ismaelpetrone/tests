@@ -10,6 +10,7 @@ import { Filter, ActiveFilter } from './filter.model';
   })
 export class FontAssessmentComponent implements OnInit, AfterViewInit {
 
+    public HOME_ROUTE = "main";
     public data: Brastlewark[] = [];
     public displaysize: number;
     @ViewChild("myButton") table: ElementRef;

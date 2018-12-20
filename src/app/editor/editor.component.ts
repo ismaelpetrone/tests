@@ -14,6 +14,7 @@ import "three/examples/js/loaders/ColladaLoader";
 
 export class EditorComponent implements OnInit {
 
+    public HOME_ROUTE = "main";
     public component: string = 'EditorComponent';
     public status: boolean = false;
     public url: string = '';
