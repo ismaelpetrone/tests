@@ -1,7 +1,7 @@
-import { AfterViewInit, OnInit, Component } from '@angular/core';
+import { AfterViewInit, OnInit, Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { DownloadUrlService } from '../shared/downloadurl/downloadurl.service';
 import { Brastlewark } from "./brastlewark.model";
-import { Filter } from './filter.model';
+import { Filter, ActiveFilter } from './filter.model';
 
 @Component({
     selector: 'font-asssessment',
@@ -9,14 +9,20 @@ import { Filter } from './filter.model';
     styleUrls: ['../app.component.css']
   })
 export class FontAssessmentComponent implements OnInit, AfterViewInit {
-    private data: Brastlewark[] = [];
 
-    public displayData: Brastlewark[] = [];
+    private data: Brastlewark[] = [];
+    public displaysize: number;
+    @ViewChild("myButton") table: ElementRef;
+
+    public selectedFilter: string = '1';    
     public filters: Filter[] = [];
+    public activeFilters: ActiveFilter[] = [];
     public showFilters: boolean = false;
     public filterText?: string = undefined;
 
-    constructor(private downloadService: DownloadUrlService) { }
+    constructor(
+        private downloadService: DownloadUrlService
+        ) { }
     
     ngOnInit(): void {
         this._createFilters();
@@ -25,41 +31,111 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         this.downloadService.getJSON('https://raw.githubusercontent.com/rrafols/mobile_test/master/data.json').
             subscribe(resp => {
-                this.data = resp.Brastlewark;
-                this._insertToDisplayData();
+                this._startData(resp.Brastlewark);
           });
     }
 
-    private startFilter(): void {
-        if (this.showFilters) {            
-            if (this._isAnyFilterActive()) {
-                if (this.filterText && this.filterText.length) {
-                    this.displayData = [];
-                    this.data.forEach((profile: Brastlewark) => {
-                        const find_profile = this._searchParams(profile);
-                        if (find_profile) {
-                            this.displayData.push(profile);
-                        }
-                    });
+    @HostListener('window:scroll', ['$event'])
+      onScroll(event): void {
+        try {            
+            if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 5)) {                
+                let done = 0;
+                let reach = 10;
+                for (let i = 0; i < this.data.length; i++) {
+                    if (!this.data[i].scrollDisplay && this.data[i].display) {
+                        this.data[i].scrollDisplay = true; 
+                        done++;
+                    }                                            
+                    if (done >= reach) {
+                        break;
+                    }
                 }
             }
+        } catch (error) {
+
         }
+      }
+
+    private _assignData(gnomes: Brastlewark[]): void {
+        for (let i = 0; i < 10; i++) {
+            gnomes[i].display = true;
+            gnomes[i].scrollDisplay = true;
+        }
+        this.data = gnomes;
+        this.displaysize = gnomes.length;
+    }
+
+    private _startData(gnomes: Brastlewark[]): void {
+        for (let i = 0; i < gnomes.length; i++) {
+            gnomes[i].display = true;
+            if (i < 11) gnomes[i].scrollDisplay = true;
+        }
+        this.data = gnomes;
+        this.displaysize = gnomes.length;
+    }
+
+    private startFilter(): void {
+        this.data.forEach((profile: Brastlewark) => {
+            const find_profile = this._searchParams(profile);
+            if (find_profile) {
+                if (profile.display != true) {
+                    this.displaysize += 1;
+                }
+                profile.display = true;
+                profile.scrollDisplay = true;       
+            } else {
+                if (profile.display != false) {
+                    this.displaysize -= 1;
+                }
+                profile.display = false;
+                profile.scrollDisplay = false;
+            }
+        });        
     }
 
     public do_filter(): void {
-        if (!this.filterText || !this.filterText.length || !this._isAnyFilterActive()) {
-            this._insertToDisplayData();
-        } else {
+        if (this.filterText && this.filterText.length) {
+            this._createActualFilter();
             this.startFilter();
         }
     }
 
-    public do_filter_keyup(): void {
-        if (!this.filterText || !this.filterText.length) {
-            this._insertToDisplayData();
+    private _random(min: number, max: number) {
+        return Math.round(Math.random() * (max - min + 1)) + min;         
+    }
+
+    private _checkRepeteadFilterId(id: number): number {
+        const filter = this.activeFilters.find(x => x.id === id);
+        if (filter) {
+            return this._checkRepeteadFilterId(this._random(0, 100));
         } else {
-            this.startFilter();
+            return id;
         }
+    }
+
+    private _createActualFilter(): void {
+        const filter = this.filters.find(x => x.id === parseInt(this.selectedFilter, 10));
+        const newId = this._checkRepeteadFilterId(this._random(0, 100));
+        this.activeFilters.push(new ActiveFilter(newId, filter, this.filterText));
+    }
+
+    public deleteActualFilter(actualFilterId: number): void {
+        const filter = this.activeFilters.find(x => x.id === actualFilterId);
+        this.activeFilters.splice(this.activeFilters.indexOf(filter), 1);
+        if (this.activeFilters && this.activeFilters.length) {
+            this.startFilter();
+        } else {
+            this._assignData(this.data);
+        }
+    }
+
+    public do_filter_keyup(event: KeyboardEvent): void {
+        if (event.key === "Enter") {
+            if (this.filterText && this.filterText.length) {
+                this._createActualFilter();
+                this.startFilter();
+            }
+        }        
     }
 
     private _createFilters(): void {
@@ -72,52 +148,52 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
         this.filters.push(new Filter(7, 'Friends'));
     }
 
-    private _insertToDisplayData(): void {
-        if (this.data.length === this.displayData.length) return;
-        this.displayData = this.data;
-    }
-
-    private _searchParams(profile: Brastlewark): Brastlewark {        
-        for (let i = 0; i < this.filters.length; i++) {
-            const filter = this.filters[i] as Filter;
-            if (filter.selected) {
-                let compare = undefined;
-                switch (filter.id) {
-                    case 1:
-                        compare = profile.name;
-                    break;
-                    case 2:
-                        compare = profile.age.toString();
-                    break;
-                    case 3:
-                        compare = profile.height.toString();
-                    break;
-                    case 3:
-                        compare = profile.weight.toString();
-                    break;
-                    case 5:
-                        compare = profile.hair_color;
-                    break;
-                    case 6:
-                        compare = profile.professions.toString();
-                    break;
-                    case 7:
-                        compare = profile.friends.toString();
-                    break;
-                }
-                if (compare && this._findValues(compare,  this.filterText)) {
-                    return profile;
-                }
+    private _searchParams(profile: Brastlewark): boolean {
+        let successedSearchs = 0;          
+        for (let i = 0; i < this.activeFilters.length; i++) {
+            const filter = this.activeFilters[i] as ActiveFilter;
+            let compare = undefined;
+            switch (filter.filter.id) {
+                case 1:
+                    compare = profile.name;
+                break;
+                case 2:
+                    compare = profile.age.toString();
+                break;
+                case 3:
+                    compare = profile.height.toString();
+                break;
+                case 3:
+                    compare = profile.weight.toString();
+                break;
+                case 5:
+                    compare = profile.hair_color;
+                break;
+                case 6:
+                    compare = profile.professions.toString();
+                break;
+                case 7:
+                    compare = profile.friends.toString();
+                break;
             }
+            if (compare
+                && this._findValues(
+                                compare.replace(' ', '').split(','), 
+                                filter.textoToSearch.replace(' ', '').split(',')
+                                )
+                ) {
+                successedSearchs +=1;
+            }            
         }
-        return null;
+        if (successedSearchs >= this.activeFilters.length) {
+            return true;
+        }
+        return false;        
     }
 
-    private _findValues(content: any, textToFind: any): boolean {
-        const splitted_search = textToFind.replace(' ', '').split(',');
-        const splitted_content = content.split(',');
-        for (let i = 0; i < splitted_content.length; i++) {
-            if (this._findValues2(splitted_content[i].toString(), splitted_search)) {
+    private _findValues(content: string[], textToFind: string[]): boolean {
+        for (let i = 0; i < content.length; i++) {
+            if (this._findValues2(content[i].toString(), textToFind)) {
                 return true;
             }
         }
@@ -132,26 +208,4 @@ export class FontAssessmentComponent implements OnInit, AfterViewInit {
         }
         return false;
     }
-
-    private _isAnyFilterActive(): boolean {
-        for (let i = 0; i < this.filters.length; i++) {
-            const filter = this.filters[i] as Filter;
-            if (filter.selected) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private _getNumberOfFilters(): number {
-        let c = 0;
-        for (let i = 0; i < this.filters.length; i++) {
-            const filter = this.filters[i] as Filter;
-            if (filter.selected) {
-                c++
-            }
-        }
-        return c;
-}
-
 }

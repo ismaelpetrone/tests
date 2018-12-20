@@ -10,6 +10,10 @@ import  { FontAssessmentComponent } from './font-assessment/font-assessment.comp
 import { DownloadUrlService } from './shared/downloadurl/downloadurl.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const appRoutes: Routes = [
   { path: 'main', component: MainComponent },
@@ -33,10 +37,14 @@ const appRoutes: Routes = [
     BrowserModule,
     AngularFontAwesomeModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    ScrollingModule,
+    BrowserAnimationsModule,
+    MatTooltipModule
   ],
   providers: [
-    DownloadUrlService
+    DownloadUrlService,
+    MediaMatcher
   ],
   bootstrap: [AppComponent]
 })

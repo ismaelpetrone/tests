@@ -2,10 +2,19 @@ export class Filter {
 
     constructor(
         public id?: number,
-        public name?: string,
-        public selected?: boolean
+        public name?: string
     ) {
-        this.selected = false;
+    }
+
+}
+
+export class ActiveFilter {
+
+    constructor(
+        public id?: number,
+        public filter?: Filter,
+        public textoToSearch?: string
+    ) {
     }
 
 }

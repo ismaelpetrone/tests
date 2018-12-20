@@ -3,76 +3,102 @@
         #back
         [path]="main">
     </go-to>
-    <div class="float-left">
-        Result: {{displayData.length}}
-    </div>  
-    <div class="float-right">
-        <i style="font-size:38px;" class="fa fa-filter" aria-hidden="true" (click)="showFilters=!showFilters"></i>        
+    <div class="row">        
+        <div
+            [ngClass]="{
+                'col-sm-1': showFilters,
+                'col-sm-11': !showFilters
+            }">
+            <i style="font-size:38px;" class="fa fa-filter" aria-hidden="true" (click)="showFilters=!showFilters"></i>        
+        </div>
+        <div class="col-sm-6">
+            <ng-container *ngIf="selectedFilter && showFilters">
+                <button type="button" class="btn btn-success" (click)="do_filter()">
+                    Add filter <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <input 
+                        class="form-control"
+                        type="text"
+                        name="filterText"
+                        placeholder="Search text"
+                        [(ngModel)]="filterText"
+                        [value]="filterText"
+                        (keyup)="do_filter_keyup($event)"
+                />                
+            </ng-container>
+        </div>          
+        <div *ngIf="showFilters" class="col-sm-4">
+            <label class="btn" style="margin:0px;">
+                Filters
+            </label>
+            <select class="form-control" [(ngModel)]="selectedFilter" name="activeFilter">          
+                <option *ngFor="let filter of filters"                    
+                        [value]="filter.id">
+                        {{filter.name}}
+                </option>
+            </select>        
+        </div>     
     </div>
-    <div class="float-right">
-        <input *ngIf="showFilters"
-        class="form-control"
-        type="text"
-        name="filterText"
-        placeholder="Search text"
-        [(ngModel)]="filterText"
-        [value]="filterText"
-        (keyup)="do_filter_keyup()"
-        />
-    </div>               
-    <div *ngIf="showFilters" class="float-right form-check-inline">           
-        <div *ngFor="let filter of filters">
-            <button 
-                type="button"
-                class="btn"
-                [ngClass]="{
-                    'btn-success': filter.selected,
-                    'btn-secondary': !filter.selected
-                }"
-                (click)="filter.selected=!filter.selected;do_filter()">
-            {{filter.name}}
+    <div class="row">
+        <div class="col-sm-12">
+            
+        </div>
+    </div> 
+    <ng-container *ngIf="activeFilters && activeFilters.length">
+        <br>
+        <div class="row" >
+            <button mat-raised-button
+                matTooltip="{{active.textoToSearch}}"
+                style="margin-right:5px;margin-left:5px;"
+                *ngFor="let active of activeFilters" type="button" class="btn btn-warning">
+                {{active.filter.name}}
+                <span ngbTooltip="active.textoToSearch">
+                    <i (click)="deleteActualFilter(active.id)" class="fa fa-times" aria-hidden="true"></i>
+                </span>
             </button>
         </div>
-    </div>
-    <br>
-    <table class="table table-hover table-striped" style="">
+        <br>
+    </ng-container>
+    <table #table class="table table-responsive">
         <thead class="thead-dark">
             <th></th>
             <th>Name</th>
             <th>Age</th>
             <th>Height</th>
             <th>Weight</th>
-            <th>Hair color</th>
+            <th>Hair</th>
             <th>Professions</th>
             <th>Friends</th>
         </thead>
-        <tbody>
-            <tr *ngFor="let person of displayData">
-                <td>
-                    <img width="100px" height="80px" src="{{person.thumbnail}}"/>
-                </td>
-                <td>
-                    {{person.name}}
-                </td>
-                <td>
-                    {{person.age}}
-                </td>
-                <td>
-                    {{person.height}}
-                </td>
-                <td>
-                    {{person.weight}}
-                </td>
-                <td>  
-                    {{person.hair_color}}
-                </td>
-                <td style="overflow:auto;">
-                    {{person.professions}}
-                </td>
-                <td style="overflow:auto;">  
-                    {{person.friends}}
-                </td>
-            </tr>
+        <tbody>            
+            <ng-container *ngFor="let gnome of data">
+                <tr *ngIf="gnome.display && gnome.scrollDisplay">
+                    <td>
+                        <img width="100px" height="80px" src="{{gnome.thumbnail}}"/>
+                    </td>
+                    <td>
+                        {{gnome.name}}
+                    </td>
+                    <td>
+                        {{gnome.age}}
+                    </td>
+                    <td>
+                        {{gnome.height}}
+                    </td>
+                    <td>
+                        {{gnome.weight}}
+                    </td>
+                    <td>  
+                        {{gnome.hair_color}}
+                    </td>
+                    <td style="overflow:auto;">
+                        {{gnome.professions}}
+                    </td>
+                    <td style="overflow:auto;">  
+                        {{gnome.friends}}
+                    </td>
+                </tr>
+            </ng-container>            
         </tbody>
         <tfoot>            
         </tfoot>

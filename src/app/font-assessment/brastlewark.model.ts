@@ -8,6 +8,8 @@ export class Brastlewark {
     public hair_color: string;
     public friends: string[];
     public professions: string[];
+    public display: boolean;
+    public scrollDisplay: boolean;
 
     constructor(
         id?: number,
@@ -18,7 +20,11 @@ export class Brastlewark {
         weight?: number,
         hair_color?: string,
         friends?: string[],
-        professions?: string[]
-    ) { }
+        professions?: string[],
+        display?: boolean
+    ) { 
+        this.display = true;
+        this.scrollDisplay = true;
+    }
 
 }
