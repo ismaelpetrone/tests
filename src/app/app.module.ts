@@ -21,6 +21,9 @@ const appRoutes: Routes = [
   { path: 'font-assessment', component: FontAssessmentComponent },
   { path: '',
     redirectTo: '/main',
+    pathMatch: 'full' },
+    { path: '**',
+    redirectTo: '/main',
     pathMatch: 'full' }
 ];
 
