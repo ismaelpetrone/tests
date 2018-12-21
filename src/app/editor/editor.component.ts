@@ -14,7 +14,7 @@ import "three/examples/js/loaders/ColladaLoader";
 
 export class EditorComponent implements OnInit {
 
-    public HOME_ROUTE = "../main";
+    public HOME_ROUTE = "/main";
     public component: string = 'EditorComponent';
     public status: boolean = false;
     public url: string = '';
@@ -57,7 +57,7 @@ export class EditorComponent implements OnInit {
         this.scene = new THREE.Scene();
         this.scene.add(new THREE.AxesHelper(200));
         var loader = new THREE.ColladaLoader();
-        loader.load('../assets/three/multimaterial.dae', this.onModelLoadingCompleted);
+        loader.load('assets/multimaterial.dae', this.onModelLoadingCompleted);
     }
 
     private onModelLoadingCompleted(collada) {
